@@ -2,9 +2,7 @@
  * Validate credit card numbers with the Luhn algorithm.
  *
  * CS50 hacker1
- *
- * To do: store variable of even/odd numberLength check to avoid
- *        redundant code in luhnCheck      
+ *    
  */
 
 #include <stdio.h>
@@ -37,7 +35,7 @@ int main(void)
             printf("INVALID\n");
         }
     }
-    else if (numberOfDigits == 16 && charArray[0] == '5' && (charArray[1] == '1' || charArray[1] == '2' || charArray[1] == '3' || charArray[1] == '4' || charArray[1] == '5'))
+    else if (numberOfDigits == 16 && charArray[0] == '5' && (charArray[1] > '0' && charArray[1] < '6'))
     {
         if (luhnCheck(charArray, numberOfDigits))
         {
@@ -77,59 +75,45 @@ int luhnCheck(char * number, int numberLength)
 {
     int sumOdds = 0;
     int sumEvens = 0;
+    int offsetOdds;
+    int offsetEvens;
     // choose correct offset for array iteration if CC# is even
     if ((numberLength % 2) == 0)
     {
-        for (int i = 1; i < numberLength; i += 2)
-        {
-            // sum of all digits not doubled convert ascii code for number to int value (-48)
-            sumOdds = sumOdds + (number[i] - 48);
-        }
-        int firstDigit;
-        int secondDigit;
-        // loop through every other digit starting from second to last digit
-        for (int i = 0; i < numberLength; i += 2)
-        {
-            // if product of doubling is a double digit
-            if (((number[i] - 48) * 2) > 9)
-            {
-                // find first digit from the right
-                secondDigit = ((number[i] - 48) * 2) % 10;
-                // and consecutive digit(s)
-                firstDigit = (((number[i] - 48) * 2) / 10) % 10;
-                // sum the results
-                sumEvens = sumEvens + firstDigit + secondDigit;
-            }
-            else
-            {
-                // sum of all doubled digits
-                sumEvens = sumEvens + ((number[i] - 48) * 2);
-            }
-        }
+        offsetOdds = 1;
+        offsetEvens = 0;   
     }
     else
     {
-        // set offset for array iteration if CC# is odd
-        for (int i = 0; i < numberLength; i += 2)
+        offsetOdds = 0;
+        offsetEvens = 1;
+    }
+    for (int i = offsetOdds; i < numberLength; i += 2)
+    {
+        // sum of all digits not doubled convert ascii code for number to int value (-48)
+        sumOdds = sumOdds + (number[i] - 48);
+    }
+    int firstDigit;
+    int secondDigit;
+    // loop through every other digit starting from second to last digit
+    for (int i = offsetEvens; i < numberLength; i += 2)
+    {
+        // if product of doubling is a double digit
+        if (((number[i] - 48) * 2) > 9)
         {
-            sumOdds = sumOdds + (number[i] - 48);
+            // find first digit from the right
+            secondDigit = ((number[i] - 48) * 2) % 10;
+            // and consecutive digit(s)
+            firstDigit = (((number[i] - 48) * 2) / 10) % 10;
+            // sum the results
+            sumEvens = sumEvens + firstDigit + secondDigit;
         }
-        int firstDigit;
-        int secondDigit;
-        for (int i = 1; i < numberLength; i += 2)
+        else
         {
-            if (((number[i] - 48) * 2) > 9)
-            {
-                secondDigit = ((number[i] - 48) * 2) % 10;
-                firstDigit = (((number[i] - 48) * 2) / 10) % 10;
-                sumEvens = sumEvens + firstDigit + secondDigit;
-            }
-            else
-            {
-                sumEvens = sumEvens + ((number[i] - 48) * 2);   
-            }
+            // sum of all doubled digits
+            sumEvens = sumEvens + ((number[i] - 48) * 2);
         }
-    }   
+    }
     // check that last digit of summed digits is 0
     if (((sumOdds + sumEvens) % 10) == 0)
     {
