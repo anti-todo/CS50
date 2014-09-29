@@ -2,6 +2,9 @@
  * crack.c
  *
  * CS50 hacker2
+ *
+ * To do: -comment
+ *        -add bruteforce routine to run after dictionary attack
  */
 
 #define _XOPEN_SOURCE
